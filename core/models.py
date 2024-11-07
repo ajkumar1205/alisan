@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class Product(models.Model):
     name = models.CharField(max_length=100)
     price = models.FloatField()
-    image_url = models.CharField(max_length=2083)
+    image_url = models.CharField(max_length=2083, blank=True, null=True)
     gst_number = models.CharField(max_length=100)
     max_discount = models.FloatField()
 
@@ -14,9 +14,9 @@ class Product(models.Model):
 class Lead(models.Model):
     source = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
-    interest = models.ManyToOneRel(Product)
+    interest = models.ManyToManyField(Product, related_name="leads")
     created_at = models.DateTimeField(auto_now_add=True)
-    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE)
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
 class SiteVisit(models.Model):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE)
@@ -24,6 +24,7 @@ class SiteVisit(models.Model):
     visit_notes = models.TextField()
     visit_status = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
+    technicians = models.ManyToManyField(User, related_name="technicians", blank=True)
 
 class SiteExpenses(models.Model):
     site_visit = models.ForeignKey(SiteVisit, on_delete=models.CASCADE)
