@@ -103,7 +103,7 @@ jobs:
 
     - name: Deploy to PythonAnywhere
       env:
-        PA_USERNAME: ${{ secrets.ALISAN_USERNAME }}
-        PA_TOKEN: ${{ secrets.ALISAN_API_TOKEN }}
+        ALISAN_USERNAME: ${{ secrets.ALISAN_USERNAME }}
+        ALISAN_API_TOKEN: ${{ secrets.ALISAN_API_TOKEN }}
         PROJECT_NAME: ${{ secrets.ALISAN_USERNAME }}
       run: python deploy.py
