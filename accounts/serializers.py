@@ -1,10 +1,11 @@
 from rest_framework import serializers
-from .models import MyUser
+from .models import MyUser, Employee
 
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MyUser
-        fields = ['id', 'email', 'phone_number', 'is_admin', 'is_staff', 'is_active']
+        model = Employee
+        fields = "__all__"
+        
         
 
 

@@ -36,7 +36,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return self.email or self.phone_number
+        return str(self.id)
 
 class Neighbours(models.Model):
     first_name = models.CharField(max_length=100)
