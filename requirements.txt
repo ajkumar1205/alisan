@@ -3,3 +3,6 @@ djangorestframework
 djangorestframework-simplejwt
 psycopg2
 python-dotenv
+twilio
+uuid
+Pillow
