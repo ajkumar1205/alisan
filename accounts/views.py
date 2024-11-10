@@ -49,20 +49,37 @@ class VerifyOtp(GenericAPIView):
         
         User = get_user_model()
         user = User.objects.filter(phone_number=phone_number).first()
-        
+
+
         refresh = RefreshToken.for_user(user)
 
-        return Response({
-            'message': 'OTP verified successfully',
-            'tokens': {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            },
-            'user': {
-                'id': user.id,
-                'phone_number': user.phone_number,
-            }
-        }, status=status.HTTP_200_OK)
+        if Employee.objects.filter(user=user).exists():
+            emp = Employee.objects.get(user=user)
+            return Response({
+                'message': 'OTP verified successfully',
+                'tokens': {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                },
+                'user': {
+                    'id': user.id,
+                    'phone_number': user.phone_number,
+                },
+                'employee': emp.id
+            }, status=status.HTTP_200_OK)
+        else: 
+            return Response({
+                'message': 'OTP verified successfully',
+                'tokens': {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                },
+                'user': {
+                    'id': user.id,
+                    'phone_number': user.phone_number,
+                },
+                'employee': None
+            }, status=status.HTTP_200_OK)
     
 
 class EmployeeCreateView(GenericAPIView):

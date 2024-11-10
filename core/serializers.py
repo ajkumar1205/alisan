@@ -8,3 +8,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class LeadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lead
+        exclude = ['created_by', 'assigned_to']
