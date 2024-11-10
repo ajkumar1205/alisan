@@ -1,7 +1,7 @@
 django
 djangorestframework
 djangorestframework-simplejwt
-psycopg2
+# psycopg2
 python-dotenv
 twilio
 uuid
