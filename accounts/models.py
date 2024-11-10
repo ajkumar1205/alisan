@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.utils.translation import gettext as _
 import uuid
 
 class UserManager(BaseUserManager):
@@ -23,28 +24,35 @@ class UserManager(BaseUserManager):
         return self.create_user(email, phone_number, password, **extra_fields)
 
 class MyUser(AbstractBaseUser, PermissionsMixin):
+
+    ROLE_CHOICES = [
+        ('sale_manager', 'Sale Manager'),
+        ('sales_executive', 'Sales Executive'),
+        ('technical_manager', 'Technical Manager'),
+        ('technician_executive', 'Technician Executive'),
+        ('accounts', 'Accounts'),
+        ('admin', 'Admin')
+    ]
+
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     email = models.EmailField(unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=20, unique=True, null=True, blank=True)
+
+    role = models.CharField(max_length=100, choices=ROLE_CHOICES)
+    franchise = models.ForeignKey(_('accounts.Franchise'), on_delete=models.CASCADE, null=True, blank=True)
+
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
     USERNAME_FIELD = 'email'
+
     REQUIRED_FIELDS = ['phone_number']
 
     objects = UserManager()
 
     def __str__(self):
-        return str(self.id)
-
-class Neighbours(models.Model):
-    first_name = models.CharField(max_length=100)
-    first_phone = models.CharField(max_length=100)
-    second_name = models.CharField(max_length=100)
-    second_phone = models.CharField(max_length=100)
-    third_name = models.CharField(max_length=100)
-    third_phone = models.CharField(max_length=100)
+        return self.email or self.phone_number
 
 class Franchise(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
@@ -55,20 +63,22 @@ class Franchise(models.Model):
     phone = models.CharField(max_length=100)
     email = models.EmailField()
     password = models.CharField(max_length=100)
-    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, blank=True)
+    owner = models.ForeignKey(_('accounts.MyUser'), on_delete=models.CASCADE, blank=True, related_name="franchise_owner")
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="created_by", blank=True)
+    created_by = models.ForeignKey(_('accounts.MyUser'), on_delete=models.CASCADE, related_name="created_by", blank=True)
+
+
+class Neighbours(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    first_name = models.CharField(max_length=100)
+    first_phone = models.CharField(max_length=100)
+    second_name = models.CharField(max_length=100)
+    second_phone = models.CharField(max_length=100)
+    third_name = models.CharField(max_length=100)
+    third_phone = models.CharField(max_length=100) 
 
 
 class Employee(models.Model):
-
-    ROLE_CHOICES = [
-        ('sale_manager', 'Sale Manager'),
-        ('sales_executive', 'Sales Executive'),
-        ('technical_manager', 'Technical Manager'),
-        ('technician_executive', 'Technician Executive'),
-        ('accounts', 'Accounts'),
-    ]
 
     MARRIED_STATUS = [
         ('married', 'Married'),
@@ -91,7 +101,7 @@ class Employee(models.Model):
     account_number = models.CharField(max_length=100)
     ifsc_code = models.CharField(max_length=100)
     passport_number = models.CharField(max_length=100, null=True, blank=True)
-    neighbours = models.OneToOneField(Neighbours, on_delete=models.CASCADE, related_name="neighbours")
+    neighbours = models.OneToOneField(Neighbours, on_delete=models.CASCADE, related_name="neighbours", null=True, blank=True)
 
     aadhar_front = models.ImageField(upload_to='employee/aadhar/front')
     aadhar_back = models.ImageField(upload_to='employee/aadhar/back')
@@ -101,9 +111,7 @@ class Employee(models.Model):
 
 
     docs_drive_link = models.URLField(null=True, blank=True)
-    role = models.CharField(max_length=100, choices=ROLE_CHOICES)
-    franchise = models.ForeignKey(Franchise, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="employee_created_by")
+    created_by = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="employee_created_by", null=True, blank=True)
 
 

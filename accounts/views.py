@@ -10,12 +10,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .helpers import OtpHandler
-from .serializers import OtpSerializer, EmployeeSerializer
+from .serializers import OtpSerializer, EmployeeSerializer, NeighbourSerializer
+from .models import Employee, MyUser
 
 
 @api_view(['POST'])
 def login(request):
     phone_number = request.data.get('phone_number')
+
+    if not MyUser.objects.filter(phone_number=phone_number).exists():
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     if not phone_number:
         return Response({'error': 'Phone number is required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -46,11 +50,6 @@ class VerifyOtp(GenericAPIView):
         User = get_user_model()
         user = User.objects.filter(phone_number=phone_number).first()
         
-        if not user:
-            user = User.objects.create(phone_number=phone_number)
-            user.set_password(otp_handler.set_password())
-            user.save()
-        
         refresh = RefreshToken.for_user(user)
 
         return Response({
@@ -72,11 +71,34 @@ class EmployeeCreateView(GenericAPIView):
 
     def post(self, request):
 
+        user = request.user
         serializer = self.get_serializer(data=request.data)
         
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        user.set_password(OtpHandler.set_password())
-        user.save()
+        serializer.save(user = user)
 
         return Response({'message': 'Employee created successfully'}, status=status.HTTP_201_CREATED)
+    
+
+class NeighbourCreateView(GenericAPIView):
+    serializer_class = NeighbourSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        n = serializer.save()
+
+        try:
+            emp = Employee.objects.get(user=user)
+            emp.neighbours = n
+            emp.save()
+        except Employee.DoesNotExist:
+            return Response({'error': 'Employee not found for the user'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'message': 'Neighbour created and assigned successfully'}, status=status.HTTP_201_CREATED)
+    
+

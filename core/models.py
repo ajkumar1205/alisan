@@ -20,6 +20,7 @@ class Lead(models.Model):
     interest = models.ManyToManyField(Product, related_name="leads")
     created_at = models.DateTimeField(auto_now_add=True)
     assigned_to = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="lead_created_by")
 
 class SiteVisit(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
