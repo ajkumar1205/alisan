@@ -64,6 +64,8 @@ class VerifyOtp(GenericAPIView):
                 'user': {
                     'id': user.id,
                     'phone_number': user.phone_number,
+                    'role': user.role,
+                    'franchise': user.franchise.id
                 },
                 'employee': emp.id
             }, status=status.HTTP_200_OK)
@@ -77,6 +79,8 @@ class VerifyOtp(GenericAPIView):
                 'user': {
                     'id': user.id,
                     'phone_number': user.phone_number,
+                    'role': user.role,
+                    'franchise': user.franchise.id
                 },
                 'employee': None
             }, status=status.HTTP_200_OK)
@@ -95,6 +99,15 @@ class EmployeeCreateView(GenericAPIView):
         serializer.save(user = user)
 
         return Response({'message': 'Employee created successfully'}, status=status.HTTP_201_CREATED)
+    
+    def get(self, request):
+        user = request.user
+        try:
+            emp = Employee.objects.get(user=user)
+            serializer = EmployeeSerializer(emp)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Employee.DoesNotExist:
+            return Response({'error': 'Employee not found for the user'}, status=status.HTTP_404_NOT_FOUND)
     
 
 class NeighbourCreateView(GenericAPIView):

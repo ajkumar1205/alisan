@@ -1,8 +1,9 @@
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .serializers import AttendanceSerializer, LeaveSerializer
+from .serializers import AttendanceSerializer, LeaveSerializer, HolidaySerializer
+from .models import Holiday
 from accounts.models import Employee
 
 
@@ -32,3 +33,23 @@ class LeaveView(GenericAPIView):
         serializer.save(employee=emp)
 
         return Response({'message': 'Leave sent for approval!'})
+    
+
+class HolidayView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = HolidaySerializer
+    
+    
+    def post(self, request):
+        date = request.query_params.get('date')
+        holiday = Holiday.objects.filter(date=date).first()
+
+        if holiday:
+            return Response({'message': 'Holiday', 'description': holiday.description})
+        return Response({'message': 'Working Day'})
+    
+    
+    def get(self, request):
+        holidays = Holiday.objects.all()
+        serializer = self.get_serializer(holidays, many=True)
+        return Response(serializer.data)
