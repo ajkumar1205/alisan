@@ -48,7 +48,7 @@ class VerifyOtp(GenericAPIView):
             return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
         
         User = get_user_model()
-        user = User.objects.filter(phone_number=phone_number).first()
+        user = User.objects.get(phone_number=phone_number)
 
 
         refresh = RefreshToken.for_user(user)

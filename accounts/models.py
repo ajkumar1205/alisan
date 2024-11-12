@@ -2,6 +2,12 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from django.utils.translation import gettext as _
 import uuid
+from django.core.exceptions import ValidationError
+
+
+def validate_pdf(file):
+    if not file.name.endswith('.pdf'):
+        raise ValidationError('Only PDF files are allowed.')
 
 class UserManager(BaseUserManager):
     def create_user(self, email=None, phone_number=None, password=None, **extra_fields):
@@ -57,15 +63,20 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 class Franchise(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=100)
-
-    gst_number = models.CharField(max_length=100)
+    owner = models.ForeignKey(_('accounts.MyUser'), on_delete=models.CASCADE, blank=True, related_name="franchise_owner")
+    dob = models.DateField()
     address = models.TextField()
     phone = models.CharField(max_length=100)
     email = models.EmailField()
-    password = models.CharField(max_length=100)
-    owner = models.ForeignKey(_('accounts.MyUser'), on_delete=models.CASCADE, blank=True, related_name="franchise_owner")
+    type = models.CharField(max_length=100)
+    gst_number = models.FileField(upload_to='franchise/gst', validators=[validate_pdf])
+    registration_number = models.CharField(max_length=100, null=True, blank=True)
+    interests = models.ManyToManyField('core.Product', related_name="franchise_interests")
+    website = models.URLField(null=True, blank=True)
+    sales_region = models.CharField(max_length=100)
+    tnc = models.TextField()
+    referral_code = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(_('accounts.MyUser'), on_delete=models.CASCADE, related_name="created_by", blank=True)
 
 
 class Neighbours(models.Model):
