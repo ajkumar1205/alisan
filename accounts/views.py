@@ -65,7 +65,7 @@ class VerifyOtp(GenericAPIView):
                     'id': user.id,
                     'phone_number': user.phone_number,
                     'role': user.role,
-                    'franchise': user.franchise.id
+                    'franchise': user.franchise
                 },
                 'employee': emp.id
             }, status=status.HTTP_200_OK)
@@ -80,7 +80,7 @@ class VerifyOtp(GenericAPIView):
                     'id': user.id,
                     'phone_number': user.phone_number,
                     'role': user.role,
-                    'franchise': user.franchise.id
+                    'franchise': user.franchise
                 },
                 'employee': None
             }, status=status.HTTP_200_OK)
