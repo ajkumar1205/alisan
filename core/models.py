@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from accounts.models import Employee
 import uuid
 
-# Create your models here.
-
+def validate_pdf(file):
+    if not file.name.endswith('.pdf'):
+        raise ValidationError('Only PDF files are allowed.')
 class Product(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=100)
@@ -30,14 +32,25 @@ class Lead(models.Model):
 class SiteVisit(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE)
-    visit_date = models.DateTimeField(auto_now_add=True)
-    visit_notes = models.TextField()
+    visit_date = models.DateTimeField()
+    site_pic_notes = models.ManyToManyField('SitePicAndNotes', related_name="site_pic_notes", blank=True)
     visit_status = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     technicians = models.ManyToManyField(Employee, related_name="technicians", blank=True)
 
     def __str__(self) -> str:
         return self.lead.name
+    
+
+class SitePicAndNotes(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    site_visit = models.ForeignKey(SiteVisit, on_delete=models.CASCADE)
+    pic = models.ImageField(upload_to='site_pics/')
+    notes = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return self.site_visit.lead.name
 
 class SiteExpenses(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
@@ -61,7 +74,6 @@ class Payment(models.Model):
     ]
 
 
-
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE)
     amount = models.FloatField()
@@ -73,3 +85,39 @@ class Payment(models.Model):
 
     def __str__(self) -> str:
         return self.amount
+    
+
+class Quotation(models.Model):
+
+    STATUS_CHOICES  = [
+        ('approval', 'Approval Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+        ('cancelled', 'Cancelled')
+    ]
+
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE)
+    products = models.ManyToManyField(Product, related_name="products")
+    payments = models.ManyToManyField(Payment, related_name="payments")
+    total_amount = models.FloatField()
+    discount = models.FloatField()
+    discount_amount = models.FloatField()
+    gst = models.FloatField()
+    gst_amount = models.FloatField()
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='approval')
+    file = models.FileField(upload_to='quotations/', blank=True, null=True, validators=[validate_pdf])
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="quotation_created_by")
+
+    def __str__(self) -> str:
+        return self.total_amount
+    
+
+class Faq(models.Model):
+    question = models.TextField()
+    answer = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return self.question
