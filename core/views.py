@@ -14,7 +14,7 @@ class ProductListView(ListAPIView):
     
     def get_queryset(self):
         user = self.request.user
-        return Product.objects.filter(franchise=user.franchise)
+        return Product.objects.filter()
 
 
 class LeadCreateView(GenericAPIView):

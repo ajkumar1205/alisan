@@ -91,15 +91,15 @@ class EmployeeCreateView(GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-
         user = request.user
         serializer = self.get_serializer(data=request.data)
-        
         serializer.is_valid(raise_exception=True)
-        serializer.save(user = user)
-
+        
+        # Save the Employee with the authenticated user context
+        serializer.save(user=user)
+        
         return Response({'message': 'Employee created successfully'}, status=status.HTTP_201_CREATED)
-    
+
     def get(self, request):
         user = request.user
         try:

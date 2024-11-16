@@ -112,7 +112,7 @@ class Employee(models.Model):
     account_number = models.CharField(max_length=100)
     ifsc_code = models.CharField(max_length=100)
     passport_number = models.CharField(max_length=100, null=True, blank=True)
-    neighbours = models.OneToOneField(Neighbours, on_delete=models.CASCADE, related_name="neighbours", null=True, blank=True)
+    neighbours = models.OneToOneField(Neighbours, on_delete=models.CASCADE, related_name="neighbours")
 
     aadhar_front = models.ImageField(upload_to='employee/aadhar/front')
     aadhar_back = models.ImageField(upload_to='employee/aadhar/back')

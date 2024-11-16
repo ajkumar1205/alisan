@@ -7,6 +7,7 @@ import uuid
 def validate_pdf(file):
     if not file.name.endswith('.pdf'):
         raise ValidationError('Only PDF files are allowed.')
+    
 class Product(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=100)
