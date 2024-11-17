@@ -86,7 +86,7 @@ class Neighbours(models.Model):
     second_name = models.CharField(max_length=100)
     second_phone = models.CharField(max_length=100)
     third_name = models.CharField(max_length=100)
-    third_phone = models.CharField(max_length=100) 
+    third_phone = models.CharField(max_length=100)
 
 
 class Employee(models.Model):
@@ -114,11 +114,11 @@ class Employee(models.Model):
     passport_number = models.CharField(max_length=100, null=True, blank=True)
     neighbours = models.OneToOneField(Neighbours, on_delete=models.CASCADE, related_name="neighbours")
 
-    aadhar_front = models.ImageField(upload_to='employee/aadhar/front')
-    aadhar_back = models.ImageField(upload_to='employee/aadhar/back')
+    aadhar_front = models.ImageField(upload_to='employee/aadhar/front', null=True, blank=True)
+    aadhar_back = models.ImageField(upload_to='employee/aadhar/back' , null=True, blank=True)
 
-    pan_card = models.ImageField(upload_to='employee/pan_card')
-    driving_license_front = models.ImageField(upload_to='employee/driving_license/front')
+    pan_card = models.ImageField(upload_to='employee/pan_card', null=True, blank=True)
+    driving_license_front = models.ImageField(upload_to='employee/driving_license/front', null=True, blank=True)
 
 
     docs_drive_link = models.URLField(null=True, blank=True)

@@ -7,3 +7,5 @@ python-dotenv
 twilio
 uuid
 Pillow
+boto3
+django-storages

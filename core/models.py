@@ -12,7 +12,7 @@ class Product(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=100)
     price = models.FloatField()
-    image_url = models.CharField(max_length=2083, blank=True, null=True)
+    image_url = models.ImageField(upload_to='products/', blank=True, null=True)
     gst_number = models.CharField(max_length=100)
     max_discount = models.FloatField()
 
@@ -46,7 +46,7 @@ class SiteVisit(models.Model):
 class SitePicAndNotes(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     site_visit = models.ForeignKey(SiteVisit, on_delete=models.CASCADE)
-    pic = models.ImageField(upload_to='site_pics/')
+    pic = models.ImageField(upload_to='site_pics/', blank=True, null=True)
     notes = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

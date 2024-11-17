@@ -14,7 +14,6 @@ class NeighbourSerializer(serializers.ModelSerializer):
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    # Add `neighbours_data` field for nested neighbor info
     neighbours_data = NeighbourSerializer(write_only=True)
 
     class Meta:
@@ -53,5 +52,3 @@ class OtpSerializer(serializers.Serializer):
 
         return data
     
-
-
