@@ -16,6 +16,9 @@ class Product(models.Model):
     gst_number = models.CharField(max_length=100)
     max_discount = models.FloatField()
 
+    def __str__(self) -> str:
+        return f"{self.name} - Rs. {self.price} | Max Discount: {self.max_discount}%"
+
 
 class Lead(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
@@ -85,7 +88,7 @@ class Payment(models.Model):
     recieved_by = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="recieved_by")
 
     def __str__(self) -> str:
-        return self.amount
+        return f"{self.lead.name} paid amount of Rs. {self.amount}"
     
 
 class Quotation(models.Model):
@@ -112,7 +115,7 @@ class Quotation(models.Model):
     created_by = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="quotation_created_by")
 
     def __str__(self) -> str:
-        return self.total_amount
+        return f"On lead {self.lead.name} Created By {self.created_by.name}"
     
 
 class Faq(models.Model):
@@ -122,3 +125,14 @@ class Faq(models.Model):
 
     def __str__(self) -> str:
         return self.question
+    
+
+class SiteVisitCoordinates(models.Model):
+    site_visit = models.ForeignKey(SiteVisit, on_delete=models.CASCADE)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self) -> str:
+        return self.site_visit.lead.name
+    

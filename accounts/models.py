@@ -24,7 +24,6 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, phone_number, password, **extra_fields):
-        extra_fields.setdefault('is_admin', True)
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, phone_number, password, **extra_fields)
@@ -47,7 +46,6 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=100, choices=ROLE_CHOICES)
     franchise = models.ForeignKey(_('accounts.Franchise'), on_delete=models.CASCADE, null=True, blank=True)
 
-    is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
@@ -77,6 +75,9 @@ class Franchise(models.Model):
     tnc = models.TextField()
     referral_code = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Neighbours(models.Model):

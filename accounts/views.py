@@ -93,7 +93,7 @@ class VerifyOtp(GenericAPIView):
 
 
 class GeneratePresignedUrl(GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request):
 
@@ -123,7 +123,7 @@ class GeneratePresignedUrl(GenericAPIView):
 
 class EmployeeCreateView(GenericAPIView):
     serializer_class = EmployeeSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request):
         user = request.user
@@ -149,14 +149,14 @@ class EmployeeCreateView(GenericAPIView):
         
         return Response({'message': 'Employee created successfully'}, status=status.HTTP_201_CREATED)
 
-    def get(self, request):
-        user = request.user
-        try:
-            emp = Employee.objects.get(user=user)
-            serializer = EmployeeSerializer(emp)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Employee.DoesNotExist:
-            return Response({'error': 'Employee not found for the user'}, status=status.HTTP_404_NOT_FOUND)
+    # def get(self, request):
+    #     user = request.user
+    #     try:
+    #         emp = Employee.objects.get(user=user)
+    #         serializer = EmployeeSerializer(emp)
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
+    #     except Employee.DoesNotExist:
+    #         return Response({'error': 'Employee not found for the user'}, status=status.HTTP_404_NOT_FOUND)
     
 
 class NeighbourCreateView(GenericAPIView):
